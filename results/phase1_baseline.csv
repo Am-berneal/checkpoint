@@ -1,0 +1,6 @@
+name,width,depth,cx,t,paulice_ok,ref_method,ideal_support,ideal_entropy,F_noiseless,F_noisy
+payload_T0,4,16,12,0,True,stabilizer,1,-0.0,1.0,0.854
+payload_T1,4,17,12,1,False,statevector,2,0.601,1.0,0.8666
+payload_T2,4,17,12,2,False,statevector,2,0.601,1.0,0.8659
+payload_T4,4,18,12,4,False,statevector,4,1.202,0.9999,0.8782
+payload_T8,4,20,12,8,False,statevector,8,2.202,0.9998,0.9372
