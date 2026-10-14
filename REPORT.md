@@ -1,5 +1,5 @@
 Checkpoint: a puzzle game about where to place error-detection checks
-Qiskit Fall Fest 2026 Hackathon — Advanced Track Team: add your names here
+Qiskit Fall Fest 2026 Hackathon — Advanced Track Team: Dhurander
 
 Summary
 Checkpoint is a puzzle game in which the player protects a quantum circuit from noise by placing coherent Pauli checks on it. The circuit is drawn as a spacetime grid (qubits as rows, gate layers as columns), the player has a budget of ancilla qubits, and every move is scored by running the checked circuit in Qiskit Aer and post-selecting on the check outcomes. No score in the game is set by hand.
