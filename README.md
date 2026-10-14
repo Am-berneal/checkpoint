@@ -247,4 +247,5 @@ See [REPORT.md](REPORT.md#7-limitations) for the full discussion and future work
 
 ## 📜 License
 
-This project is released under the Apache License 2.0. See [LICENSE](LICENSE).
+This project is released under the Apache License 2.0. See [LICENSE](LICENSE).#   C h e c k p o i n t s  
+ 
