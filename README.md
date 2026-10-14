@@ -11,11 +11,13 @@
   <img src="https://img.shields.io/badge/qiskit--paulice-0.2.1-6929C4" alt="qiskit-paulice 0.2.1">
   <img src="https://img.shields.io/badge/Python-3.13-3776AB" alt="Python 3.13">
   <img src="https://img.shields.io/badge/Qiskit%20Fall%20Fest%202026-Advanced%20Track-22D3EE" alt="Qiskit Fall Fest 2026, Advanced Track">
+  <img src="https://img.shields.io/badge/Team-Dhurander-F59E0B" alt="Team Dhurander">
 </p>
 
 <p align="center">
   <a href="#-video-presentation"><b>Video</b></a> ·
   <a href="REPORT.md"><b>Report</b></a> ·
+  <a href="REPORT.pdf"><b>Report (PDF)</b></a> ·
   <a href="#-quick-start"><b>Quick start</b></a> ·
   <a href="#-key-findings"><b>Findings</b></a> ·
   <a href="#-how-the-game-maps-to-the-physics"><b>Physics</b></a>
@@ -37,15 +39,15 @@ Error detection protects a quantum computation by adding ancilla qubits that **c
 - **The score is a real trade-off.** It charges for both the errors the checks missed *and* the shots they discarded, so more checks are not always better.
 - **Nothing is hand-set.** Every number on screen comes from a Qiskit Aer run, and the results screen shows the Qiskit version, noise level, shot count and seed that produced it.
 
-Built for the **Qiskit Fall Fest 2026 Hackathon, Advanced Track**: *Gamifying Error Detection, Mitigation and Correction: error detection with spacetime codes* (challenge provided by IBM Quantum).
+Built by **Team Dhurander** for the **Qiskit Fall Fest 2026 Hackathon, Advanced Track**: *Gamifying Error Detection, Mitigation and Correction: error detection with spacetime codes* (challenge provided by IBM Quantum).
 
 ## 🎬 Video presentation
 
-**Watch the walkthrough:** _add your video link here_ (also in [`video.md`](video.md))
+**Watch the walkthrough:** [youtu.be/VIDEO_LINK](https://youtu.be/VIDEO_LINK) (also in [`video.md`](video.md))
 
 ## 📄 Report
 
-The full write-up is in **[REPORT.md](REPORT.md)**: background, method, all results with figures and tables, a worked example, the game design, how the project meets each required step and judging criterion, limitations and future work.
+The full write-up is in **[REPORT.md](REPORT.md)**, also available as a **[PDF](REPORT.pdf)**: background, method, all results with figures and tables, a worked example, the game design, how the project meets each required step and judging criterion, limitations and future work.
 
 ---
 
@@ -86,6 +88,8 @@ The best configuration overall is qiskit-paulice with four checks on the Cliffor
 </p>
 
 **Try this first:** open Level 3. Place an **X** check on q0 from step 0 to step 13: it is rejected at the T wall. Switch to **Z** on the same span: it is accepted, and the game shows it turns into −Y by the end. Run it. Then add a second check and run again: fidelity barely moves, fewer shots survive, and the score gets worse. **Placement beats quantity.**
+
+**Keyboard shortcuts** on the workbench: <kbd>X</kbd> <kbd>Y</kbd> <kbd>Z</kbd> pick an operator · <kbd>Esc</kbd> cancel a placement · <kbd>Backspace</kbd> remove the last check · <kbd>Enter</kbd> run.
 
 ---
 
@@ -207,6 +211,7 @@ checkpoint/
 ├── results/             # CSV files and figures
 ├── assets/              # screenshots used in the README and report
 ├── REPORT.md            # written report
+├── REPORT.pdf           # written report (PDF)
 ├── video.md             # video link
 └── requirements.txt
 ```
@@ -219,6 +224,7 @@ checkpoint/
 | Red "Backend not reachable" bar in the game | Start the backend in terminal 1: `uvicorn api:app --reload` |
 | `MissingOptionalLibraryError: pylatexenc` | `pip install pylatexenc` (needed for circuit drawings) |
 | The Results Lab is empty | Run `python precompute.py`, then restart the backend |
+| Buttons or icons look unstyled | The UI loads Bootstrap from a CDN, so the browser needs an internet connection |
 
 ## ⚠️ Limitations
 
@@ -232,12 +238,9 @@ See [REPORT.md](REPORT.md#7-limitations) for the full discussion and future work
 
 ---
 
-Dhurander
+## 👤 Team Dhurander
 
-| Name | Role |
-|---|---|
-| Amberneal Singh | _e.g. physics and analysis_ |
-| _Teammate_ | _e.g. game and UI_ |
+Solo project by **Amberneal Singh** ([@Am-berneal](https://github.com/Am-berneal)): physics, analysis, game engine, UI and write-up.
 
 ## 🙏 Acknowledgements
 
@@ -247,6 +250,4 @@ Dhurander
 
 ## 📜 License
 
-This project is released under the Apache License 2.0. See [LICENSE](LICENSE).#   C h e c k p o i n t s 
- 
- 
+This project is released under the Apache License 2.0. See [LICENSE](LICENSE).
