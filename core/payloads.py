@@ -1,4 +1,3 @@
-
 # core/payloads.py
 import numpy as np
 from qiskit import QuantumCircuit
@@ -27,9 +26,10 @@ def ops_to_circuit(n_qubits, ops):
 
 
 def build_payload(n_qubits=4, depth=4, n_t=0, seed=7):
-    """Mirror payload: V(+T insertions) followed by V_clifford^dagger. No measurements."""
+    """Mirror payload: V (Clifford + n_t T gates) followed by V^dagger.
+    Ideal output is always |00...0>, so every circuit in the family is compared fairly.
+    No measurements are added here."""
     ops = random_clifford_ops(n_qubits, depth, seed)
-    clifford_forward = ops_to_circuit(n_qubits, ops)
 
     # nested T positions: same permutation for every n_t
     perm = np.random.default_rng(seed + 1000).permutation(len(ops))
@@ -42,13 +42,16 @@ def build_payload(n_qubits=4, depth=4, n_t=0, seed=7):
             fwd_ops.append(("t", (op[1][0],)))   # T on the first qubit of that op
 
     qc = ops_to_circuit(n_qubits, fwd_ops)
-    qc.compose(clifford_forward.inverse(), inplace=True)
+    forward = qc.copy()
+    qc.compose(forward.inverse(), inplace=True)   # inverts the T gates too (T -> Tdg)
     qc.name = f"payload_T{n_t}"
     return qc
 
 
 def t_count(qc):
-    return qc.count_ops().get("t", 0)
+    """Total non-Clifford gates: T plus Tdg."""
+    ops = qc.count_ops()
+    return ops.get("t", 0) + ops.get("tdg", 0)
 
 
 def is_paulice_compatible(qc):
@@ -63,6 +66,6 @@ def describe(qc):
         "width": qc.num_qubits,
         "depth": qc.depth(),
         "cx": ops.get("cx", 0),
-        "t": ops.get("t", 0),
+        "t": t_count(qc),
         "paulice_ok": is_paulice_compatible(qc),
     }

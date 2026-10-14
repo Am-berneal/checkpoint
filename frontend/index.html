@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkpoint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B1020; --bg2:#0E1428; --panel:#141A2E; --panel2:#1A2138; --inset:#0F1527; --line:#252D4A; --line2:#323C60;
+  --text:#E6E9F5; --muted:#8A93B8; --dim:#5D6690;
+  --cyan:#22D3EE; --amber:#F59E0B; --red:#EF4444; --pink:#FCA5A5; --green:#22C55E; --purple:#A78BFA;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace; --sans:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.45}
+button{font-family:var(--sans);font-size:14px;cursor:pointer;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);padding:9px 16px;transition:all .15s}
+button:hover{border-color:var(--cyan)}
+button.primary{background:var(--cyan);color:#062029;border-color:var(--cyan);font-weight:600}
+button.primary:hover{background:#67e8f9}
+button:disabled{opacity:.45;cursor:not-allowed}
+select{background:var(--inset);color:var(--text);border:1px solid var(--line2);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:13px;width:100%}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.eyebrow.c{color:var(--cyan)}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 20px 56px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.inset{background:var(--inset);border:1px solid var(--line);border-radius:8px;padding:14px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:5px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.tag.cyan{color:var(--cyan);border-color:#22D3EE55;background:#22D3EE12}
+.tag.amber{color:var(--amber);border-color:#F59E0B55;background:#F59E0B12}
+.tag.green{color:var(--green);border-color:#22C55E55;background:#22C55E12}
+.tag.red{color:var(--pink);border-color:#EF444466;background:#EF444418}
+.screen{display:none}.screen.active{display:block}
+h1{font-size:40px;margin:6px 0 10px;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:30px;margin:6px 0 8px;letter-spacing:-.01em}
+.ptitle{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin:0 0 4px;font-weight:600}
+.psub{font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:14px}
+.kv .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kv .v{font-family:var(--mono);font-size:14px;margin-top:4px}
+
+/* nav */
+.nav{display:flex;align-items:center;gap:6px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg2);position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.logo{font-family:var(--mono);font-weight:600;letter-spacing:.12em;color:var(--cyan);font-size:18px;cursor:pointer;margin-right:6px}
+.ket{font-family:var(--mono);font-size:12px;color:var(--cyan);opacity:.75;margin-right:18px}
+.tab{background:none;border:none;color:var(--text);padding:9px 14px;font-size:15px}
+.tab.on{background:var(--cyan);color:#062029;font-weight:600}
+.tab:hover{border:none;color:var(--cyan)}.tab.on:hover{color:#062029}
+.nav .sp{flex:1}
+.status{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 14px;color:var(--muted)}
+.status b{font-weight:500}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--dim)}
+.dot.on{background:var(--green);box-shadow:0 0 8px #22C55E}
+.dot.off{background:var(--red)}
+#banner{display:none;background:#3b1414;border-bottom:1px solid var(--red);padding:10px 20px;font-size:14px}
+#banner code{background:#00000055;padding:2px 6px;border-radius:4px;font-family:var(--mono)}
+
+/* title */
+.hero{min-height:calc(100vh - 66px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:20px}
+.hero svg.bg{position:absolute;inset:0;width:100%;height:100%;opacity:.4;pointer-events:none}
+.hero h1{font-size:64px;font-family:var(--mono);letter-spacing:.06em;color:var(--cyan);font-weight:600}
+.hero .stack{display:flex;flex-direction:column;gap:12px;margin-top:30px;width:260px;position:relative}
+.hero .foot{position:absolute;bottom:18px;left:20px;right:20px;display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+
+/* missions */
+.mhead{display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.scorebox .big{font-family:var(--mono);font-size:30px;color:var(--amber);font-weight:600}
+.prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 16px}
+.prog i{display:block;height:100%;background:var(--amber);border-radius:99px}
+.timeline{position:relative;margin-top:36px;padding-left:80px;display:flex;flex-direction:column;gap:24px}
+.timeline:before{content:"";position:absolute;left:39px;top:40px;bottom:60px;width:2px;background:linear-gradient(var(--cyan),var(--line))}
+.mcard{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:22px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 28px}
+.mcard.active{border-color:#22D3EE66;box-shadow:0 0 0 1px #22D3EE22,0 10px 40px #22D3EE10}
+.mcard.locked{opacity:.45}
+.node{position:absolute;left:-52px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:var(--dim);border:3px solid var(--bg)}
+.node.done{background:var(--green)}
+.node.cur{width:30px;height:30px;left:-59px;background:var(--bg);border:6px solid var(--cyan)}
+.mnum{font-family:var(--mono);font-size:22px;color:var(--cyan);margin-right:14px}
+.mtitle{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mtitle .n{font-size:24px;font-weight:600}
+.mdesc{color:#C3C8E0;margin-top:8px;max-width:560px}
+.mstats{display:grid;grid-template-columns:repeat(4,auto);gap:6px 28px;background:var(--inset);border-radius:10px;padding:14px 20px}
+.infobar{display:flex;align-items:center;gap:16px;margin-top:36px}
+
+/* game */
+.ghead{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:#C3C8E0;margin-bottom:18px}
+.legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--c)}
+.gamegrid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:start}
+.boardwrap{overflow-x:auto;padding-bottom:4px}
+.gamegrid>*,.labgrid>*{min-width:0}
+.boardwrap svg{display:block}
+.cell{cursor:pointer}.cell:hover{fill:#22D3EE12}
+.rule{display:flex;gap:10px;align-items:flex-start;font-family:var(--mono);font-size:12px;color:#C3C8E0;margin-top:14px;border:1px solid var(--line);background:var(--inset);border-radius:8px;padding:12px 14px}
+.rule.err{border-color:#EF444466;background:#EF444412;color:var(--pink)}
+.rule.ok{border-color:#22C55E55;background:#22C55E10;color:#86efac}
+.side{display:flex;flex-direction:column;gap:16px}
+.seg{display:flex;gap:6px;margin:12px 0 10px}.seg i{flex:1;height:6px;border-radius:99px;background:var(--line2)}.seg i.on{background:var(--amber)}
+.op{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;border:1px solid var(--line);background:var(--inset);border-radius:9px;padding:12px;cursor:pointer;margin-top:10px}
+.op:hover{border-color:var(--line2)}
+.op.sel{border-color:var(--amber);background:#F59E0B10}
+.op .b{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;grid-row:span 2}
+.op .t{font-family:var(--mono);font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.op .d{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.cost{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.cost .inset .v{font-family:var(--mono);font-size:22px;margin-top:4px}
+.range{width:100%;accent-color:var(--cyan);margin:14px 0 6px}
+.ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.runbtn{width:100%;padding:18px;font-size:17px;font-family:var(--mono);letter-spacing:.06em;border-radius:12px}
+.checkitem{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;background:var(--inset);border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin-top:8px}
+.checkitem span{flex:1}
+.checkitem button{padding:2px 8px;font-size:12px}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.mini .big{font-family:var(--mono);font-size:30px;margin:10px 0 8px}
+.mini .barline{height:5px;background:var(--line);border-radius:99px;overflow:hidden}.mini .barline i{display:block;height:100%}
+
+/* results */
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:18px 0}
+.stat .v{font-family:var(--mono);font-size:28px;font-weight:600;margin-top:6px}
+.funnel{display:flex;height:36px;border-radius:7px;overflow:hidden;font-family:var(--mono);font-size:12px;margin-top:10px}
+.funnel>div{display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden}
+.breakdown{display:grid;grid-template-columns:1fr auto;gap:8px 28px;font-family:var(--mono);font-size:14px;max-width:520px}
+.breakdown .tot{border-top:1px solid var(--line2);padding-top:8px;font-weight:600}
+.stars{color:var(--amber);font-size:30px;letter-spacing:4px}.stars .off{color:#2f375a}
+
+/* lab */
+.labgrid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;align-items:start}
+.chartbox{background:var(--inset);border:1px solid var(--line);border-radius:10px;padding:10px}
+.leg{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--mono);font-size:11.5px;color:#C3C8E0;background:var(--inset);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:14px}
+.note{display:flex;gap:12px;font-family:var(--mono);font-size:12px;color:#C3C8E0;background:var(--inset);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:14px}
+.nsel{display:flex;gap:6px;margin-top:10px}.nsel button{flex:1;font-family:var(--mono);font-size:12px;background:var(--inset);padding:9px 4px}
+.nsel button.on{background:var(--panel2);border-color:var(--cyan);color:var(--cyan)}
+.formula{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;background:var(--inset);border-radius:6px;padding:10px;margin-top:12px}
+.bottombar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+.bottombar .sp{flex:1}
+
+/* primer + physics */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card.hl{border-color:#F59E0B88}
+.callout{border-left:3px solid var(--amber);background:#F59E0B10;padding:14px 18px;border-radius:6px;margin-top:20px}
+table{border-collapse:collapse;width:100%}
+td,th{border-bottom:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top}
+th{font-family:var(--mono);color:var(--muted);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.1em}
+td:first-child{font-family:var(--mono);color:var(--amber);white-space:nowrap}
+
+@media (max-width:1100px){
+  .gamegrid,.labgrid,.mhead{grid-template-columns:1fr}
+  .mcard{grid-template-columns:1fr}
+  .mstats{grid-template-columns:repeat(2,auto)}
+}
+@media (max-width:700px){
+  .nav .status{display:none}
+  .stats4,.minis,.grid3{grid-template-columns:1fr 1fr}
+  .timeline{padding-left:0}.timeline:before,.node{display:none}
+  h1{font-size:30px}.hero h1{font-size:40px}
+  .tab{padding:7px 9px;font-size:13px}.ket{display:none}
+  td:first-child{white-space:normal}
+}
+</style>
+</head>
+<body>
+<div id="banner">Backend not reachable. In a terminal run <code>uvicorn api:app --reload</code> from the project folder, then refresh.</div>
+<nav class="nav">
+  <div class="logo" onclick="go('title')">CHECKPOINT</div>
+  <div class="ket">|ψ⟩=α|0⟩+β|1⟩</div>
+  <button class="tab" data-tab="missions" onclick="go('missions')">Missions</button>
+  <button class="tab" data-tab="game" onclick="go(state.data ? 'game' : 'missions')">Workbench</button>
+  <button class="tab" data-tab="lab" onclick="go('lab')">Results Lab</button>
+  <button class="tab" data-tab="physics" onclick="go('physics')">How it Works</button>
+  <div class="sp"></div>
+  <div class="status">
+    <span><span class="dot" id="apiDot"></span>&nbsp; QISKIT AER BACKEND: <b id="apiState">CHECKING</b></span>
+    <span>TOTAL SCORE: <b style="color:var(--amber)" id="navScore">0</b> pts</span>
+  </div>
+</nav>
+
+<!-- ================= TITLE ================= -->
+<section id="title" class="screen active">
+  <div class="hero">
+    <svg class="bg" id="bgwires" preserveAspectRatio="none"></svg>
+    <div class="eyebrow c">Quantum error detection // spacetime codes</div>
+    <h1>CHECKPOINT</h1>
+    <div class="muted" style="font-size:19px">Catch quantum errors before they reach your answer</div>
+    <div class="stack">
+      <button class="primary" onclick="go('missions')">Play</button>
+      <button onclick="go('primer')">Three ways to fight noise</button>
+      <button onclick="go('lab')">Results Lab</button>
+    </div>
+    <div class="foot"><span>Every score computed with Qiskit Aer</span><span>Qiskit Fall Fest 2026 · Advanced Track</span></div>
+  </div>
+</section>
+
+<!-- ================= PRIMER ================= -->
+<section id="primer" class="screen"><div class="wrap">
+  <div class="eyebrow c">Briefing // before you play</div>
+  <h1>Three ways to fight noise</h1>
+  <p class="muted">This game is about the first one.</p>
+  <div class="grid3" style="margin-top:22px">
+    <div class="card hl">
+      <span class="tag amber">This game</span>
+      <h3 class="ptitle" style="margin-top:14px">Detection</h3>
+      <svg viewBox="0 0 240 90" width="100%"><rect x="100" y="10" width="40" height="70" rx="6" fill="none" stroke="#F59E0B"/>
+        <text x="120" y="48" fill="#F59E0B" text-anchor="middle" font-size="10" font-family="JetBrains Mono, monospace">check</text>
+        <g fill="#22D3EE"><circle cx="20" cy="25" r="5"/><circle cx="45" cy="45" r="5"/><circle cx="70" cy="65" r="5"/></g>
+        <circle cx="35" cy="72" r="5" fill="#EF4444"/>
+        <g fill="#22C55E"><circle cx="170" cy="25" r="5"/><circle cx="195" cy="45" r="5"/><circle cx="220" cy="65" r="5"/></g>
+        <circle cx="120" cy="86" r="4" fill="#EF4444"/></svg>
+      <p>Ancilla checks flag errors they can see. Flagged shots are thrown away; the state is not repaired.</p>
+    </div>
+    <div class="card">
+      <h3 class="ptitle" style="margin-top:30px">Mitigation</h3>
+      <svg viewBox="0 0 240 90" width="100%"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#E6E9F5"/></marker></defs>
+        <rect x="30" y="40" width="22" height="40" fill="#5D6690"/><rect x="60" y="55" width="22" height="25" fill="#5D6690"/>
+        <path d="M95 50 L125 50" stroke="#E6E9F5" marker-end="url(#ar)"/>
+        <rect x="140" y="20" width="22" height="60" fill="#22D3EE"/><rect x="170" y="70" width="22" height="10" fill="#22D3EE"/></svg>
+      <p>Hardware stays noisy. The estimate is corrected afterwards using extra circuits and shots.</p>
+    </div>
+    <div class="card">
+      <h3 class="ptitle" style="margin-top:30px">Correction</h3>
+      <svg viewBox="0 0 240 90" width="100%"><rect x="70" y="8" width="100" height="74" rx="8" fill="none" stroke="#22D3EE" stroke-dasharray="4 3"/><g id="dots" fill="#22D3EE"></g></svg>
+      <p>Errors are decoded and undone during the computation, using many physical qubits per logical qubit.</p>
+    </div>
+  </div>
+  <div class="callout">Detection never fixes errors, and it misses any error its checks do not cover. Keeping fewer shots is the price you pay for cleaner ones.</div>
+  <div style="margin-top:22px;text-align:right"><button class="primary" onclick="go('missions')">Go to missions →</button></div>
+</div></section>
+
+<!-- ================= MISSIONS ================= -->
+<section id="missions" class="screen"><div class="wrap">
+  <div class="mhead">
+    <div>
+      <div class="eyebrow c">● Campaign missions // error detection with spacetime checks</div>
+      <h1>Missions</h1>
+      <p style="color:#C3C8E0;max-width:760px;font-size:16px">Step through increasingly non-Clifford circuits. Place ancilla checks, keep as many shots as you can, and find the best trade-off between post-selected fidelity and shots kept.</p>
+    </div>
+    <div class="panel scorebox">
+      <div style="display:flex;justify-content:space-between;gap:10px"><span class="eyebrow">Total score</span><span class="eyebrow c" id="campProg"></span></div>
+      <div style="margin-top:10px"><span class="big" id="campScore">0</span> <span class="mono muted" id="campMax"></span></div>
+      <div class="prog"><i id="campBar" style="width:0"></i></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="kv">
+        <div><div class="k">Shot retention</div><div class="v" id="campKeep">—</div></div>
+        <div><div class="k">Backend</div><div class="v">aer_simulator</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="timeline" id="missionList"></div>
+  <div class="panel infobar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="1.8"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg>
+    <div style="flex:1"><div style="font-weight:600;font-size:17px">How scoring works</div>
+      <div class="muted">Points compare your estimation error with the best configuration found for that mission: 1000 pts means you matched the sweet spot.</div></div>
+    <button onclick="go('physics')">Read the rules</button>
+  </div>
+</div></section>
+
+<!-- ================= GAME / WORKBENCH ================= -->
+<section id="game" class="screen"><div class="wrap">
+  <div class="ghead">
+    <button onclick="go('missions')">← Missions</button>
+    <h2 id="gTitle" style="margin:0"></h2>
+    <span class="tag cyan" id="gTag"></span>
+    <span class="tag amber" id="gNoise"></span>
+  </div>
+  <div class="legend">
+    <span style="--c:var(--cyan)">Data qubits</span>
+    <span style="--c:var(--amber)">Checks / ancillas</span>
+    <span style="--c:var(--pink)">T wall (only Z or I may cross)</span>
+    <span style="--c:var(--red)">Rejected check</span>
+  </div>
+  <div class="gamegrid">
+    <div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+          <div><div class="ptitle">Spacetime schedule</div><div class="psub" id="gSub"></div></div>
+          <span class="tag red" id="gWalls"></span>
+        </div>
+        <div class="boardwrap" id="board"></div>
+        <div class="rule" id="rule"></div>
+      </div>
+      <div class="minis">
+        <div class="panel mini"><div class="eyebrow">State space</div><div class="big">dim <span id="mDim"></span></div><div class="muted mono" style="font-size:12px" id="mDimSub"></div></div>
+        <div class="panel mini"><div class="eyebrow">Non-Clifford gates</div><div class="big" style="color:var(--pink)"><span id="mT"></span> × T</div><div class="barline"><i id="mTbar" style="background:var(--pink)"></i></div></div>
+        <div class="panel mini"><div class="eyebrow">Fidelity, no checks</div><div class="big" id="mF0"></div><div class="barline"><i id="mF0bar" style="background:var(--cyan)"></i></div></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="panel">
+        <div class="eyebrow">Ancilla budget</div>
+        <div style="margin-top:8px"><span class="mono" style="font-size:34px;color:var(--amber)" id="bUsed">0</span> <span class="mono muted">of <span id="bMax"></span> allocated</span></div>
+        <div class="seg" id="bSeg"></div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Check operators</div>
+        <p class="muted" style="font-size:13px;margin:8px 0 0">Pick an operator, click a start cell on a qubit, then an end cell on the same qubit.</p>
+        <div class="op" data-p="X" onclick="pickPauli('X')"><div class="b" style="background:#EF444433;color:var(--pink)">X</div><div class="t">X check <span class="tag red">blocked at T</span></div><div class="d">Detects Z-type errors at its start</div></div>
+        <div class="op" data-p="Y" onclick="pickPauli('Y')"><div class="b" style="background:#F59E0B33;color:var(--amber)">Y</div><div class="t">Y check <span class="tag red">blocked at T</span></div><div class="d">Detects X- and Z-type errors</div></div>
+        <div class="op sel" data-p="Z" onclick="pickPauli('Z')"><div class="b" style="background:#22D3EE33;color:var(--cyan)">Z</div><div class="t">Z check <span class="tag green">crosses T</span></div><div class="d">[T, Z] = 0, so it passes T walls</div></div>
+        <div id="checkList"></div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Circuit overhead</div>
+        <div class="cost">
+          <div class="inset"><div class="eyebrow">Added ancillas</div><div class="v" id="cAnc">0</div></div>
+          <div class="inset"><div class="eyebrow">Added 2-qubit gates</div><div class="v" style="color:var(--amber)" id="cCx">+0</div></div>
+        </div>
+        <div class="muted mono" style="font-size:11px;margin-top:8px">Counted from each check's controlled-Paulis at the start and end of its span.</div>
+      </div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between"><span style="font-weight:600">Shot budget</span><span class="mono" style="color:var(--cyan)" id="nLabel"></span></div>
+        <input type="range" class="range" min="0" max="2" step="1" value="1" id="nSlider" oninput="updateN()">
+        <div class="ticks"><span>100</span><span>1,000</span><span>10,000</span></div>
+        <div class="inset" style="margin-top:12px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px"><span class="muted">Statistical error if all kept</span><span id="nErr"></span></div>
+      </div>
+      <div class="panel">
+        <button class="primary runbtn" id="runBtn" onclick="runLevel()">▶ RUN ON QISKIT</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+          <button onclick="resetChecks()">↺ Reset layout</button>
+          <button onclick="hint()">💡 Hint</button>
+        </div>
+        <div class="muted mono" style="font-size:11px;text-align:center;margin-top:12px" id="runInfo"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ================= RESULTS ================= -->
+<section id="results" class="screen"><div class="wrap">
+  <div class="eyebrow c">Run report // computed with Qiskit Aer</div>
+  <h1 id="rTitle"></h1>
+  <div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px">
+    <div><div class="eyebrow">Estimation error (lower is better)</div><div class="mono" style="font-size:54px;font-weight:600" id="rScore"></div></div>
+    <div style="text-align:right"><div class="stars" id="rStars"></div><div class="mono" style="color:var(--amber);font-size:20px" id="rPts"></div></div>
+  </div>
+  <div class="stats4">
+    <div class="panel stat"><div class="eyebrow">Fidelity, no checks</div><div class="v" id="rF0"></div></div>
+    <div class="panel stat"><div class="eyebrow">Fidelity, post-selected</div><div class="v" style="color:var(--green)" id="rF1"></div></div>
+    <div class="panel stat"><div class="eyebrow">Shots kept</div><div class="v" id="rKeep"></div></div>
+    <div class="panel stat"><div class="eyebrow">Overhead</div><div class="mono" style="margin-top:8px;line-height:1.7" id="rOver"></div></div>
+  </div>
+  <div class="panel"><div class="ptitle">Where your shots went</div><div class="funnel" id="rFunnel"></div></div>
+  <div class="panel" style="margin-top:16px">
+    <div class="ptitle" style="margin-bottom:14px">Why this score</div>
+    <div class="breakdown" id="rBreak"></div>
+    <p class="muted" style="margin-top:14px">More checks remove more errors (smaller bias) but discard more shots (larger statistical error). The best strategy balances both.</p>
+    <p class="muted mono" style="font-size:12px" id="rProv"></p>
+  </div>
+  <div class="bottombar">
+    <button onclick="go('game')">↺ Try again</button>
+    <button onclick="openLab(state.level)">See the trade-off chart</button>
+    <div class="sp"></div>
+    <button class="primary" id="nextBtn" onclick="startLevel(state.level + 1)">Next mission →</button>
+  </div>
+</div></section>
+
+<!-- ================= LAB ================= -->
+<section id="lab" class="screen"><div class="wrap">
+  <div class="eyebrow c">■ Experiment telemetry // trade-off analysis</div>
+  <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-end">
+    <div><h1>Results lab: the trade-off</h1>
+      <p style="color:#C3C8E0;max-width:760px">Pareto analysis of post-selected fidelity against shots kept. Every point is a check configuration run in Qiskit Aer under the same noise model.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap" id="labTags"></div>
+  </div>
+  <div class="labgrid" style="margin-top:18px">
+    <div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div><div class="ptitle">Post-selected fidelity vs. shots kept</div><div class="psub">each point = one configuration · hover the chart to read coordinates</div></div>
+          <span class="tag cyan" id="hover">Hover: —</span>
+        </div>
+        <div class="leg">
+          <span><span style="color:#8A93B8">●</span> All configurations (<span id="nConf"></span>)</span>
+          <span><span style="color:var(--cyan)">━</span> Pareto frontier</span>
+          <span><span style="color:var(--amber)">★</span> Your latest run</span>
+          <span><span style="color:var(--green)">◯</span> Sweet spot (min. estimation error)</span>
+        </div>
+        <div class="chartbox" id="labChart"></div>
+        <div class="note"><span style="color:var(--cyan)">›_</span><span id="labNote"></span></div>
+      </div>
+      <div class="minis" style="margin-top:20px">
+        <div class="panel mini"><div class="eyebrow">Raw fidelity (no checks)</div><div class="big" id="lF0"></div><div class="mono" style="font-size:12px;color:var(--pink)">unfiltered noisy baseline</div></div>
+        <div class="panel mini"><div class="eyebrow" style="color:var(--amber)">Your latest run</div><div class="big" style="color:var(--amber)" id="lYou">—</div><div class="mono muted" style="font-size:12px" id="lYouSub">play this mission to compare</div></div>
+        <div class="panel mini"><div class="eyebrow" style="color:var(--cyan)">Sweet spot</div><div class="big" style="color:var(--cyan)" id="lBest"></div><div class="mono" style="font-size:12px;color:var(--cyan)" id="lBestSub"></div></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="panel">
+        <div class="ptitle">Configuration controls</div>
+        <div class="psub">recomputes the score for every point</div>
+        <div class="eyebrow" style="margin-bottom:8px">Mission / T count</div>
+        <select id="labLevel" onchange="drawLab()"></select>
+        <div class="eyebrow" style="margin-top:18px">Shot budget N</div>
+        <div class="nsel" id="labN"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:16px"><button onclick="exportCSV()" style="font-family:var(--mono);font-size:12px">⤓ Export CSV</button></div>
+      </div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between"><div class="ptitle">Estimation error vs. checks</div><span class="eyebrow c">U-curve</span></div>
+        <div class="psub">best configuration found for each number of checks</div>
+        <div class="chartbox" id="uChart"></div>
+        <p style="margin:14px 0 0"><b>Trade-off principle:</b> <span class="muted">adding checks suppresses the bias from errors, but post-selection discards shots and raises the statistical error ~ 1/√(N·kept).</span></p>
+        <div class="formula">ε = (1 − F) + 1 / √(N · kept)</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel bottombar">
+    <span class="mono muted" style="font-size:12px" id="labProv"></span>
+    <div class="sp"></div>
+    <button onclick="go(state.data ? 'game' : 'missions')">Return to workbench</button>
+    <button class="primary" onclick="labPlay()">Play this mission →</button>
+  </div>
+</div></section>
+
+<!-- ================= PHYSICS ================= -->
+<section id="physics" class="screen"><div class="wrap">
+  <div class="eyebrow c">Rulebook // game rule → physics</div>
+  <h1>How the game maps to the physics</h1>
+  <div class="panel" style="margin-top:18px"><table>
+    <tr><th>Game rule</th><th>Physics</th></tr>
+    <tr><td>Ancilla budget</td><td>Space overhead of the spacetime code: one ancilla qubit per check.</td></tr>
+    <tr><td>Placing a check</td><td>Coherent Pauli check: ancilla in |+⟩, controlled-P before a circuit segment, controlled-P′ = U P U† after it, ancilla read in the X basis.</td></tr>
+    <tr><td>Discarded shots</td><td>Post-selection on a non-trivial syndrome.</td></tr>
+    <tr><td>T wall</td><td>T is diagonal, so only I or Z commute through it. An X or Y check across a T gate would change the computation.</td></tr>
+    <tr><td>Checks must commute</td><td>Overlapping checks that anti-commute disturb each other's syndrome.</td></tr>
+    <tr><td>Shots kept</td><td>Sampling overhead = 1 / kept fraction.</td></tr>
+    <tr><td>Score</td><td>Estimation error at a fixed shot budget N: (1 − post-selected fidelity) + 1/√(N · kept fraction). Points = 1000 × best error ÷ your error.</td></tr>
+  </table></div>
+  <div class="panel" style="margin-top:16px">
+    <div class="ptitle">Limitations</div>
+    <ul style="color:#C3C8E0;line-height:1.7">
+      <li>Detection does not repair errors; it only discards shots.</li>
+      <li>A check only sees errors that anti-commute with it; others reach the kept shots undetected.</li>
+      <li>qiskit-paulice accepts Clifford circuits only, so T-doped missions use hand-built checks that obey the T-wall rule.</li>
+      <li>Results come from Qiskit Aer with a synthetic depolarizing noise model. On today's IBM hardware T is a virtual rz(π/4); its error rate here is a model assumption reflecting the fault-tolerant setting.</li>
+    </ul>
+  </div>
+</div></section>
+
+<script>
+const API = "http://127.0.0.1:8000";
+const GL = {h:"H", s:"S", sdg:"S†", sx:"√X", sxdg:"√X†", x:"X", z:"Z", y:"Y", t:"T", tdg:"T†"};
+const DESC = {
+  1: "Clifford-only mirror circuit under depolarizing noise. Every check placement is open to you.",
+  2: "Two non-Clifford gates appear. X and Y checks can no longer pass through them.",
+  3: "Four T walls split the circuit. Find checks that survive the walls and still cover the noisy CX gates.",
+  4: "Eight T walls. Very few placements remain valid. Spend your ancillas carefully.",
+};
+const NS = [100, 1000, 10000];
+const state = {levels:[], info:{}, level:null, data:null, checks:[], pauli:"Z", pending:null, rejected:null, last:{}, labN:1000};
+
+// ---- per-viewer progress (browser storage, optional) ----
+function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+const prog = Object.assign({stars:{}, bestErr:{}, keeps:[], last:{}}, load("cp_progress", {}));
+state.last = prog.last;
+
+// ---- API ----
+async function api(path, opts){
+  try{
+    const r = await fetch(API + path, opts);
+    const data = await r.json();
+    online(true);
+    if(!r.ok) throw new Error(data.detail || "request failed");
+    return data;
+  }catch(e){ if(e instanceof TypeError) online(false); throw e; }
+}
+const post = (p, b) => api(p, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(b)});
+function online(ok){
+  document.getElementById("banner").style.display = ok ? "none" : "block";
+  document.getElementById("apiDot").className = "dot " + (ok ? "on" : "off");
+  const st = document.getElementById("apiState");
+  st.textContent = ok ? "ONLINE" : "OFFLINE"; st.style.color = ok ? "var(--green)" : "var(--red)";
+}
+async function ensureLevels(){
+  if(state.levels.length) return;
+  const lv = await api("/levels");
+  await Promise.all(lv.map(async l => { state.info[l.id] = await api(`/levels/${l.id}/pareto`); }));
+  state.levels = lv;
+}
+function points(level){ return Math.round(1000 * Math.min(1, state.levels.find(l => l.id === level).best_error / prog.bestErr[level])); }
+function totalScore(){ return state.levels.reduce((s, l) => s + (prog.bestErr[l.id] ? points(l.id) : 0), 0); }
+
+// ---- navigation ----
+function go(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab === id || (id === "results" && t.dataset.tab === "game")));
+  window.scrollTo(0, 0);
+  if(id === "missions") renderMissions();
+  if(id === "lab") openLab(state.level || 1);
+}
+
+// ---- decorative backgrounds ----
+(function(){
+  const svg = document.getElementById("bgwires"); let h = "";
+  for(let i=0;i<7;i++){ const y = 12 + i*12;
+    h += `<line x1="0" x2="100" y1="${y}" y2="${y}" stroke="#252D4A" stroke-width="0.3" vector-effect="non-scaling-stroke"/>`;
+    for(let k=0;k<3;k++){ const x = (i*37 + k*29) % 100; h += `<circle cx="${x}" cy="${y}" r="0.6" fill="#F59E0B"/>`; } }
+  svg.setAttribute("viewBox","0 0 100 100"); svg.innerHTML = h;
+  let d = ""; for(let r=0;r<3;r++) for(let c=0;c<5;c++) d += `<circle cx="${88+c*16}" cy="${24+r*20}" r="4"/>`;
+  document.getElementById("dots").innerHTML = d;
+})();
+
+// ================= MISSIONS =================
+async function renderMissions(){
+  const el = document.getElementById("missionList");
+  try{ await ensureLevels(); }catch(e){ el.innerHTML = `<div class="rule err">Could not load missions.</div>`; return; }
+  const done = state.levels.filter(l => prog.bestErr[l.id]).length;
+  const total = totalScore(), max = 1000 * state.levels.length;
+  document.getElementById("campScore").textContent = total.toLocaleString();
+  document.getElementById("campMax").textContent = `/ ${max.toLocaleString()} pts`;
+  document.getElementById("campBar").style.width = `${100*total/max}%`;
+  document.getElementById("campProg").textContent = `Progress: ${done}/${state.levels.length}`;
+  document.getElementById("navScore").textContent = total.toLocaleString();
+  document.getElementById("campKeep").textContent = prog.keeps.length ? `${(100*prog.keeps.reduce((a,b)=>a+b,0)/prog.keeps.length).toFixed(1)}% avg` : "—";
+  const current = (state.levels.find(l => !prog.bestErr[l.id]) || {}).id;
+  let html = state.levels.map(l => {
+    const isDone = !!prog.bestErr[l.id], isCur = l.id === current;
+    const info = state.info[l.id] || {};
+    const bestF = info.points ? Math.max(...info.points.map(p => p.F)) : null;
+    const tags = (l.t_gates ? `<span class="tag amber">Hand-placed checks</span>` : `<span class="tag cyan">Clifford only</span>`) +
+      (isDone ? `<span class="tag green">✓ Completed</span>` : isCur ? `<span class="tag cyan">Active mission</span>` : `<span class="tag">Unlocked</span>`);
+    const btn = isCur ? `<button class="primary" style="padding:14px 22px;font-size:16px" onclick="startLevel(${l.id})">Enter workbench →</button>`
+                      : `<button style="padding:12px 20px;font-size:15px" onclick="startLevel(${l.id})">${isDone ? "Replay ↺" : "Play ▸"}</button>`;
+    return `<div class="mcard ${isCur ? "active" : ""}">
+      <div class="node ${isDone ? "done" : isCur ? "cur" : ""}"></div>
+      <div><div class="mtitle"><span class="mnum">0${l.id}</span><span class="n">${l.name}</span>${tags}</div>
+        <div class="mdesc">${DESC[l.id] || ""}</div></div>
+      <div class="mstats kv">
+        <div class="k">T gates</div><div class="k">Ancilla budget</div><div class="k">Best F found</div><div class="k">Your score</div>
+        <div class="v" style="color:${l.t_gates ? "var(--amber)" : "inherit"}">${l.t_gates || "0 (Clifford)"}</div>
+        <div class="v">${l.budget} qubits</div>
+        <div class="v">${bestF ? bestF.toFixed(3) : "—"}</div>
+        <div class="v" style="color:var(--green)">${isDone ? points(l.id) + " pts" : "—"}</div>
+      </div>
+      <div>${btn}</div></div>`;
+  }).join("");
+  html += `<div class="mcard locked"><div class="node"></div>
+    <div><div class="mtitle"><span class="mnum">0${state.levels.length+1}</span><span class="n">Real hardware</span><span class="tag">🔒 Planned</span></div>
+      <div class="mdesc">Same rules on a fake IBM backend with real connectivity: long-range checks will cost SWAP gates.</div></div>
+    <div class="mstats kv"><div class="k">Backend</div><div class="k">Status</div><div class="k"></div><div class="k"></div>
+      <div class="v">Fake backend</div><div class="v">Not built yet</div><div></div><div></div></div>
+    <div><button disabled>🔒 Locked</button></div></div>`;
+  el.innerHTML = html;
+}
+
+// ================= WORKBENCH =================
+async function startLevel(id){
+  try{ await ensureLevels(); state.data = await api(`/levels/${id}`); }catch(e){ return; }
+  Object.assign(state, {level:id, checks:[], pending:null, rejected:null});
+  const d = state.data, g = d.grid, nT = g.gates.filter(x => x.name === "t" || x.name === "tdg").length;
+  document.getElementById("gTitle").textContent = `Level ${id} — ${d.name}`;
+  document.getElementById("gTag").textContent = `MISSION_0${id}`;
+  document.getElementById("gNoise").textContent = `Noise: 2-qubit error ${d.baseline.provenance.p2}`;
+  document.getElementById("gSub").textContent = `${g.n_layers} time steps · ${g.n_qubits} data qubits · ${g.gates.length} gates`;
+  const walls = document.getElementById("gWalls");
+  walls.style.display = nT ? "" : "none"; walls.textContent = `⚠ ${nT} T walls`;
+  document.getElementById("mDim").textContent = 2 ** g.n_qubits;
+  document.getElementById("mDimSub").textContent = `${g.n_qubits} qubits · Hilbert space`;
+  document.getElementById("mT").textContent = nT;
+  document.getElementById("mTbar").style.width = `${Math.min(100, nT/8*100)}%`;
+  document.getElementById("mF0").textContent = d.baseline.F_postselected.toFixed(3);
+  document.getElementById("mF0bar").style.width = `${100*d.baseline.F_postselected}%`;
+  document.getElementById("runInfo").textContent = `Qiskit ${d.baseline.provenance.qiskit} · Aer ${d.baseline.provenance.qiskit_aer} · ${d.baseline.provenance.shots} shots per run`;
+  setRule(nT ? "RULE: X and Y checks cannot cross a T wall. Z checks can, because T and Z commute." :
+               "RULE: no T walls here. Any Pauli check is allowed; overlapping checks must commute.", "");
+  go("game"); updateN(); drawBoard(); drawSide();
+}
+function setRule(text, kind){ const r = document.getElementById("rule"); r.className = "rule" + (kind ? " " + kind : ""); r.innerHTML = `<span>ⓘ</span><span>${text}</span>`; }
+function pickPauli(p){ state.pauli = p; document.querySelectorAll(".op").forEach(o => o.classList.toggle("sel", o.dataset.p === p)); }
+function updateN(){
+  const N = NS[+document.getElementById("nSlider").value];
+  document.getElementById("nLabel").textContent = `N = ${N.toLocaleString()} shots`;
+  document.getElementById("nErr").textContent = `±${(1/Math.sqrt(N)).toFixed(3)}`;
+}
+const weight = lab => lab.replace("-", "").split("").filter(c => c !== "I").length;
+
+const CW = 50, RH = 62, AH = 44, LEFT = 74, TOP = 40;
+function drawBoard(){
+  const g = state.data.grid, nL = g.n_layers, nQ = g.n_qubits, B = state.data.budget;
+  const ancTop = TOP + nQ*RH + 34;
+  const W = LEFT + nL*CW + 24, H = ancTop + B*AH + 16;
+  const X = l => LEFT + l*CW + CW/2, Y = q => TOP + q*RH + RH/2, AY = k => ancTop + k*AH + AH/2;
+  const F = `font-family="JetBrains Mono, ui-monospace, monospace"`;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" ${F} font-size="12">`;
+  g.gates.filter(x => x.name === "t" || x.name === "tdg").forEach(t => {
+    s += `<rect x="${LEFT + t.layer*CW + 6}" y="${TOP - 10}" width="${CW-12}" height="${H - TOP}" fill="#FCA5A5" opacity="0.07" rx="4"/>`;
+    s += `<text x="${X(t.layer)}" y="${TOP - 14}" fill="#FCA5A5" text-anchor="middle" font-size="9">WALL</text>`;
+  });
+  for(let l=0;l<nL;l++) s += `<text x="${X(l)}" y="${TOP - 28}" fill="#5D6690" text-anchor="middle" font-size="10">t=${l}</text>`;
+  for(let q=0;q<nQ;q++){
+    s += `<rect x="6" y="${Y(q)-12}" width="30" height="24" rx="5" fill="#22D3EE"/><text x="21" y="${Y(q)+4}" fill="#062029" text-anchor="middle" font-weight="600">q${q}</text>`;
+    s += `<text x="44" y="${Y(q)+4}" fill="#5D6690" font-size="10">|0⟩</text>`;
+    s += `<line x1="${LEFT}" x2="${LEFT + nL*CW}" y1="${Y(q)}" y2="${Y(q)}" stroke="#323C60"/>`;
+    for(let l=0;l<nL;l++) s += `<rect class="cell" x="${LEFT + l*CW}" y="${TOP + q*RH}" width="${CW}" height="${RH}" fill="transparent" onclick="cellClick(${q},${l})"/>`;
+  }
+  // ancilla lanes
+  s += `<rect x="4" y="${ancTop-26}" width="${W-8}" height="22" rx="4" fill="#141A2E"/>`;
+  s += `<text x="12" y="${ancTop-11}" fill="#F59E0B" font-size="10" letter-spacing="1">CHECKS / ANCILLA LANES</text>`;
+  for(let k=0;k<B;k++){
+    s += `<rect x="6" y="${AY(k)-11}" width="30" height="22" rx="5" fill="#F59E0B"/><text x="21" y="${AY(k)+4}" fill="#2a1800" text-anchor="middle" font-weight="600">a${k}</text>`;
+    s += `<line x1="${LEFT}" x2="${LEFT + nL*CW}" y1="${AY(k)}" y2="${AY(k)}" stroke="#252D4A" stroke-dasharray="3 4"/>`;
+  }
+  // gates
+  g.gates.forEach(gt => {
+    const x = X(gt.layer);
+    if(gt.qubits.length === 2){
+      const [c, t] = gt.qubits;
+      s += `<line x1="${x}" x2="${x}" y1="${Y(c)}" y2="${Y(t)}" stroke="#22D3EE" pointer-events="none"/>`;
+      s += `<circle cx="${x}" cy="${Y(c)}" r="6" fill="#22D3EE" pointer-events="none"/>`;
+      s += `<circle cx="${x}" cy="${Y(t)}" r="12" fill="#0B1020" stroke="#22D3EE" stroke-width="1.5" pointer-events="none"/>`;
+      s += `<path d="M${x-12} ${Y(t)} H${x+12} M${x} ${Y(t)-12} V${Y(t)+12}" stroke="#22D3EE" stroke-width="1.5" pointer-events="none"/>`;
+    } else {
+      const q = gt.qubits[0], isT = gt.name === "t" || gt.name === "tdg";
+      s += `<rect x="${x-18}" y="${Y(q)-16}" width="36" height="32" rx="6" fill="${isT ? "#FECACA" : "#1F2742"}" stroke="${isT ? "#FCA5A5" : "#3a4570"}" pointer-events="none"/>`;
+      s += `<text x="${x}" y="${Y(q)+4}" text-anchor="middle" fill="${isT ? "#7f1d1d" : "#E6E9F5"}" font-weight="600" pointer-events="none">${GL[gt.name] || gt.name}</text>`;
+    }
+  });
+  // checks: bracket in ancilla lane + span on the data qubit
+  const bracket = (c, k, ok) => {
+    const x1 = LEFT + c.start_layer*CW + 4, x2 = LEFT + c.end_layer*CW - 4, col = ok ? "#F59E0B" : "#EF4444";
+    let h = `<line x1="${x1+2}" x2="${x1+2}" y1="${Y(c.qubit)+24}" y2="${AY(k)-15}" stroke="${col}" stroke-dasharray="3 3" opacity=".7"/>`;
+    h += `<line x1="${x2-2}" x2="${x2-2}" y1="${Y(c.qubit)+24}" y2="${AY(k)-15}" stroke="${col}" stroke-dasharray="3 3" opacity=".7"/>`;
+    h += `<rect x="${x1}" y="${Y(c.qubit)-24}" width="${x2-x1}" height="48" rx="7" fill="${col}14" stroke="${col}" stroke-width="1.5" pointer-events="none"/>`;
+    h += `<rect x="${x1}" y="${AY(k)-15}" width="${x2-x1}" height="30" rx="6" fill="${ok ? "#3a2a0a" : "#3b1414"}" stroke="${col}" pointer-events="none"/>`;
+    const label = ok ? `${c.pauli} check · q${c.qubit} · t=${c.start_layer}→${c.end_layer-1} · ends as ${c.pauli_out}` : `${c.pauli} check · rejected`;
+    h += `<text x="${x1+8}" y="${AY(k)+4}" fill="${col}" font-size="11" pointer-events="none">${label}</text>`;
+    return h;
+  };
+  state.checks.forEach((c, k) => s += bracket(c, k, true));
+  if(state.rejected) s += bracket(state.rejected, Math.min(state.checks.length, B-1), false);
+  if(state.pending){
+    const p = state.pending;
+    s += `<rect x="${LEFT + p.layer*CW + 4}" y="${Y(p.qubit)-24}" width="${CW-8}" height="48" rx="7" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 3" pointer-events="none"/>`;
+  }
+  s += `</svg>`;
+  document.getElementById("board").innerHTML = s;
+}
+
+async function cellClick(q, l){
+  state.rejected = null;
+  const B = state.data.budget;
+  if(!state.pending){
+    if(state.checks.length >= B){ setRule(`Ancilla budget used up (${B}). Remove a check first.`, "err"); drawBoard(); return; }
+    state.pending = {qubit:q, layer:l};
+    setRule(`${state.pauli} check starts on q${q} at t=${l}. Now click where it should end on the same qubit.`, "ok");
+    drawBoard(); return;
+  }
+  const p = state.pending; state.pending = null;
+  if(q !== p.qubit || l < p.layer){ setRule("End the check on the same qubit, at or after its start.", "err"); drawBoard(); return; }
+  const spec = {qubit:q, pauli:state.pauli, start_layer:p.layer, end_layer:l+1};
+  try{
+    const v = await post(`/levels/${state.level}/validate`, spec);
+    if(!v.valid){
+      state.rejected = spec;
+      setRule(`INVALID CHECK: ${v.reason}. A check is carried through the circuit, so it can turn into X or Y before it reaches a wall. Try a Z check or a shorter span.`, "err");
+    } else {
+      state.checks.push({...spec, pauli_out:v.pauli_out});
+      setRule(`Check placed: ${spec.pauli} on q${q} is carried through the circuit and becomes ${v.pauli_out} at t=${l}. Valid.`, "ok");
+    }
+  }catch(e){ setRule(e.message, "err"); }
+  drawBoard(); drawSide();
+}
+
+function drawSide(){
+  const B = state.data.budget, n = state.checks.length;
+  document.getElementById("bUsed").textContent = n;
+  document.getElementById("bMax").textContent = B;
+  document.getElementById("bSeg").innerHTML = Array.from({length:B}, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
+  document.getElementById("cAnc").textContent = n;
+  document.getElementById("cCx").textContent = `+${state.checks.reduce((s, c) => s + weight(c.pauli) + weight(c.pauli_out), 0)}`;
+  document.getElementById("checkList").innerHTML = state.checks.map((c, i) =>
+    `<div class="checkitem"><span>a${i}: ${c.pauli} q${c.qubit} · t=${c.start_layer}→${c.end_layer-1}</span><button onclick="removeCheck(${i})">✕</button></div>`).join("");
+}
+function removeCheck(i){ state.checks.splice(i, 1); state.rejected = null; drawBoard(); drawSide(); }
+function resetChecks(){ Object.assign(state, {checks:[], pending:null, rejected:null}); drawBoard(); drawSide(); setRule("Layout cleared.", ""); }
+function hint(){
+  const nT = state.data.grid.gates.filter(x => x.name === "t").length;
+  setRule(nT ? "HINT: Z checks starting at t=0 survive many walls. Long checks cover more noisy CX gates but add controlled gates at their ends: watch the 2-qubit gate cost."
+             : "HINT: with no walls, checks spanning the middle of the circuit cover the most CX gates. Try 2 checks before using all 3: the third may cost more than it catches.", "");
+}
+
+async function runLevel(){
+  const btn = document.getElementById("runBtn");
+  btn.disabled = true; btn.textContent = "RUNNING ON QISKIT…";
+  try{
+    const checks = state.checks.map(({qubit,pauli,start_layer,end_layer}) => ({qubit,pauli,start_layer,end_layer}));
+    const N = NS[+document.getElementById("nSlider").value];
+    const r = await post(`/levels/${state.level}/run`, {checks, shot_budget:N});
+    // progress is always scored at N = 1000 so missions are comparable
+    const err1000 = (1 - r.F_postselected) + 1/Math.sqrt(1000 * r.keep_fraction);
+    if(!prog.bestErr[state.level] || err1000 < prog.bestErr[state.level]) prog.bestErr[state.level] = err1000;
+    if(r.stars) prog.stars[state.level] = Math.max(prog.stars[state.level] || 0, r.stars);
+    prog.keeps.push(r.keep_fraction);
+    prog.last[state.level] = {F:r.F_postselected, keep:r.keep_fraction, n:checks.length};
+    state.last = prog.last; save("cp_progress", prog);
+    showResults(r, err1000);
+  }catch(e){ setRule(e.message, "err"); }
+  btn.disabled = false; btn.textContent = "▶ RUN ON QISKIT";
+}
+
+// ================= RESULTS =================
+function starHTML(n){ return [1,2,3].map(i => i <= n ? "★" : '<span class="off">★</span>').join(""); }
+function showResults(r, err1000){
+  const best = state.levels.find(l => l.id === r.level).best_error;
+  const stars = err1000 <= best * 1.02 ? 3 : err1000 <= best * 1.15 ? 2 : 1;
+  document.getElementById("rTitle").textContent = `Run results — Level ${r.level}`;
+  document.getElementById("rScore").textContent = r.estimation_error.toFixed(3);
+  document.getElementById("rStars").innerHTML = starHTML(stars);
+  document.getElementById("rPts").textContent = `${Math.round(1000*Math.min(1, best/err1000))} pts`;
+  document.getElementById("rF0").textContent = r.F_no_checks.toFixed(3);
+  document.getElementById("rF1").textContent = r.F_postselected.toFixed(3);
+  document.getElementById("rKeep").textContent = (100*r.keep_fraction).toFixed(1) + "%";
+  document.getElementById("rOver").innerHTML = `+${r.ancillas} ancillas<br>+${r.added_2q} two-qubit gates<br>+${r.added_depth} depth`;
+  const k = r.keep_fraction;
+  document.getElementById("rFunnel").innerHTML =
+    `<div style="width:${100*k}%;background:#22C55E2a;color:#86efac">${r.shots_kept.toLocaleString()} kept</div>` +
+    `<div style="width:${100*(1-k)}%;background:#EF44442a;color:#fca5a5">${r.shots_discarded.toLocaleString()} discarded</div>`;
+  document.getElementById("rBreak").innerHTML =
+    `<span>Bias from undetected errors (1 − F)</span><span>${r.bias_term.toFixed(3)}</span>` +
+    `<span>Statistical error 1/√(N·kept), N = ${r.shot_budget.toLocaleString()}</span><span>${r.statistical_term.toFixed(3)}</span>` +
+    `<span class="tot">Total estimation error</span><span class="tot">${r.estimation_error.toFixed(3)}</span>`;
+  const p = r.provenance;
+  document.getElementById("rProv").textContent = `Computed with Qiskit ${p.qiskit}, Aer ${p.qiskit_aer}, ${p.shots} shots, seed ${p.seed}, 2-qubit error ${p.p2}. Stars and points are scored at N = 1,000.`;
+  document.getElementById("nextBtn").style.display = state.levels.some(l => l.id === r.level + 1) ? "" : "none";
+  document.getElementById("navScore").textContent = totalScore().toLocaleString();
+  go("results");
+}
+
+// ================= LAB =================
+async function openLab(level){
+  try{ await ensureLevels(); }catch(e){ return; }
+  const sel = document.getElementById("labLevel");
+  sel.innerHTML = state.levels.map(l => `<option value="${l.id}">Level ${l.id} — ${l.name} (${l.t_gates} T gates)</option>`).join("");
+  sel.value = level;
+  document.getElementById("labN").innerHTML = NS.map(N => `<button class="${N === state.labN ? "on" : ""}" onclick="setLabN(${N})">${N.toLocaleString()}</button>`).join("");
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === "lab"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab === "lab"));
+  drawLab();
+}
+function setLabN(N){ state.labN = N; openLab(+document.getElementById("labLevel").value); }
+const errAt = (p, N) => (1 - p.F) + 1/Math.sqrt(N * p.keep);
+function labPlay(){ startLevel(+document.getElementById("labLevel").value); }
+
+function drawLab(){
+  const level = +document.getElementById("labLevel").value, N = state.labN;
+  const d = state.info[level], pts = d.points, you = state.last[level];
+  const lvl = state.levels.find(l => l.id === level);
+  const base = pts.find(p => p.n_checks === 0) || pts[0];
+  const best = pts.reduce((a, b) => errAt(b, N) < errAt(a, N) ? b : a, pts[0]);
+  const F = `font-family="JetBrains Mono, ui-monospace, monospace"`;
+  document.getElementById("labTags").innerHTML =
+    `<span class="tag">Backend: aer_simulator</span><span class="tag">Configs: ${pts.length}</span><span class="tag amber">Valid placements: ${d.valid_placements}</span>`;
+  document.getElementById("nConf").textContent = pts.length;
+
+  // scatter
+  const W = 820, H = 470, L = 66, R = 24, T = 26, B = 52;
+  const all = pts.concat(you ? [you] : []);
+  const fLo = Math.floor((Math.min(...all.map(p => p.F)) - 0.01) * 50) / 50, fHi = Math.min(1, Math.ceil((Math.max(...all.map(p => p.F)) + 0.01) * 50) / 50);
+  const kLo = Math.max(0, Math.floor((Math.min(...all.map(p => p.keep)) - 0.02) * 20) / 20), kHi = 1;
+  const x = k => L + (k - kLo) / (kHi - kLo) * (W - L - R);
+  const y = f => T + (fHi - f) / (fHi - fLo) * (H - T - B);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" ${F} font-size="11" id="scatter">`;
+  for(let i=0;i<=5;i++){
+    const f = fLo + (fHi - fLo)*i/5, k = kLo + (kHi - kLo)*i/5;
+    s += `<line x1="${L}" x2="${W-R}" y1="${y(f)}" y2="${y(f)}" stroke="#1F2742"/><line y1="${T}" y2="${H-B}" x1="${x(k)}" x2="${x(k)}" stroke="#1F2742"/>`;
+    s += `<text x="${L-10}" y="${y(f)+4}" fill="#8A93B8" text-anchor="end">${f.toFixed(2)}</text>`;
+    s += `<text x="${x(k)}" y="${H-B+20}" fill="#8A93B8" text-anchor="middle">${(100*k).toFixed(0)}%</text>`;
+  }
+  s += `<text x="${(L+W-R)/2}" y="${H-8}" fill="#C3C8E0" text-anchor="middle" letter-spacing="1">SHOTS KEPT (%) → post-selection retention</text>`;
+  s += `<text transform="translate(16 ${(T+H-B)/2}) rotate(-90)" fill="#C3C8E0" text-anchor="middle" letter-spacing="1">POST-SELECTED FIDELITY (F) →</text>`;
+  const front = d.front.slice().sort((a, b) => a.keep - b.keep);
+  if(front.length){
+    const poly = front.map(p => `${x(p.keep)},${y(p.F)}`).join(" ");
+    s += `<polygon points="${x(front[0].keep)},${H-B} ${poly} ${x(front[front.length-1].keep)},${H-B}" fill="#22D3EE" opacity="0.07"/>`;
+    s += `<polyline fill="none" stroke="#22D3EE" stroke-width="2" points="${poly}"/>`;
+  }
+  pts.forEach(p => s += `<circle cx="${x(p.keep)}" cy="${y(p.F)}" r="3.2" fill="#8A93B8" opacity="0.55"><title>${p.n_checks} checks · F ${p.F.toFixed(3)} · kept ${(100*p.keep).toFixed(1)}% · ε ${errAt(p,N).toFixed(3)}</title></circle>`);
+  front.forEach(p => s += `<circle cx="${x(p.keep)}" cy="${y(p.F)}" r="4" fill="#0F1527" stroke="#22D3EE" stroke-width="1.5"/>`);
+  const box = (px, py, lines, col, below) => {
+    const w = 10 + Math.max(...lines.map(t => t.length)) * 6.5, h = 8 + lines.length * 15;
+    const bx = Math.min(W - R - w, Math.max(L + 4, px - w/2));
+    const by = below ? Math.min(H - B - h - 4, py + 18) : Math.max(T, py - h - 16);
+    return `<line x1="${px}" y1="${py}" x2="${bx + w/2}" y2="${below ? by : by + h}" stroke="${col}" opacity=".6"/>` +
+      `<rect x="${bx}" y="${by}" width="${w}" height="${h}" rx="4" fill="#0B1020" stroke="${col}"/>` +
+      lines.map((t, i) => `<text x="${bx+7}" y="${by+16+i*15}" fill="${i ? "#C3C8E0" : col}" font-size="10.5">${t}</text>`).join("");
+  };
+  s += `<circle cx="${x(best.keep)}" cy="${y(best.F)}" r="11" fill="none" stroke="#22C55E" stroke-width="2"/>`;
+  s += box(x(best.keep), y(best.F), [`Sweet spot (N = ${N.toLocaleString()})`, `F = ${best.F.toFixed(3)} | ${(100*best.keep).toFixed(1)}% kept`, `ε = ${errAt(best,N).toFixed(3)}`], "#22C55E", false);
+  if(you){
+    s += `<text x="${x(you.keep)}" y="${y(you.F)+7}" fill="#F59E0B" font-size="22" text-anchor="middle">★</text>`;
+    s += box(x(you.keep), y(you.F), [`Your latest run`, `F = ${you.F.toFixed(3)} | ${(100*you.keep).toFixed(1)}% kept`, `ε = ${errAt(you,N).toFixed(3)}`], "#F59E0B", true);
+  }
+  s += `</svg>`;
+  document.getElementById("labChart").innerHTML = s;
+  const svg = document.getElementById("scatter");
+  svg.onmousemove = e => {
+    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    if(p.x < L || p.x > W - R || p.y < T || p.y > H - B) return;
+    const k = kLo + (p.x - L) / (W - L - R) * (kHi - kLo), f = fHi - (p.y - T) / (H - T - B) * (fHi - fLo);
+    document.getElementById("hover").textContent = `Hover: kept ${(100*k).toFixed(1)}%, F ${f.toFixed(3)}`;
+  };
+
+  // U-curve: best error for each number of checks
+  const byN = [];
+  for(let n=0;n<=lvl.budget;n++){ const g = pts.filter(p => p.n_checks === n); if(g.length) byN.push({n, e:Math.min(...g.map(p => errAt(p, N)))}); }
+  const uW = 360, uH = 230, uL = 46, uR = 18, uT = 26, uB = 32;
+  const youE = you ? errAt(you, N) : null;
+  const eVals = byN.map(b => b.e).concat(youE !== null ? [youE] : []);
+  const eLo = Math.min(...eVals) * 0.9, eHi = Math.max(...eVals) * 1.08;
+  const ux = n => uL + n / lvl.budget * (uW - uL - uR), uy = e => uT + (eHi - e) / (eHi - eLo) * (uH - uT - uB);
+  const opt = byN.reduce((a, b) => b.e < a.e ? b : a, byN[0]);
+  let u = `<svg viewBox="0 0 ${uW} ${uH}" width="100%" ${F} font-size="10">`;
+  for(let i=0;i<=3;i++){ const e = eLo + (eHi - eLo)*i/3; u += `<line x1="${uL}" x2="${uW-uR}" y1="${uy(e)}" y2="${uy(e)}" stroke="#1F2742"/><text x="${uL-6}" y="${uy(e)+3}" fill="#8A93B8" text-anchor="end">${e.toFixed(2)}</text>`; }
+  for(let n=0;n<=lvl.budget;n++) u += `<text x="${ux(n)}" y="${uH-10}" fill="${n === opt.n ? "#22D3EE" : "#8A93B8"}" text-anchor="middle">${n}${n === opt.n ? " ★" : ""}</text>`;
+  u += `<polyline fill="none" stroke="#22D3EE" stroke-width="2" points="${byN.map(b => `${ux(b.n)},${uy(b.e)}`).join(" ")}"/>`;
+  byN.forEach(b => u += `<circle cx="${ux(b.n)}" cy="${uy(b.e)}" r="${b === opt ? 6 : 3.5}" fill="${b === opt ? "#0F1527" : "#22D3EE"}" stroke="${b === opt ? "#22C55E" : "#22D3EE"}" stroke-width="2"/><text x="${ux(b.n)}" y="${uy(b.e)-11}" fill="#C3C8E0" text-anchor="middle">${b.e.toFixed(3)}</text>`);
+  u += `<text x="${ux(opt.n)}" y="${uy(opt.e)+20}" fill="#22C55E" text-anchor="middle">opt</text>`;
+  if(you) u += `<text x="${ux(you.n)}" y="${uy(youE)+6}" fill="#F59E0B" font-size="16" text-anchor="middle">★</text><text x="${ux(you.n)+11}" y="${uy(youE)+4}" fill="#F59E0B">you</text>`;
+  u += `</svg>`;
+  document.getElementById("uChart").innerHTML = u;
+
+  document.getElementById("lF0").textContent = `${base.F.toFixed(3)} F`;
+  document.getElementById("lBest").textContent = `${best.F.toFixed(3)} F`;
+  document.getElementById("lBestSub").textContent = `${best.n_checks} check${best.n_checks === 1 ? "" : "s"} · ${(100*best.keep).toFixed(1)}% kept · ε = ${errAt(best,N).toFixed(3)}`;
+  document.getElementById("lYou").textContent = you ? `${you.F.toFixed(3)} F` : "—";
+  document.getElementById("lYouSub").textContent = you ? `${(100*you.keep).toFixed(1)}% kept · ε = ${errAt(you,N).toFixed(3)}` : "play this mission to compare";
+  document.getElementById("labNote").innerHTML = `With N = ${N.toLocaleString()} shots the sweet spot uses <b style="color:var(--text)">${opt.n} check${opt.n === 1 ? "" : "s"}</b>. Switch N above: a small shot budget favours fewer checks, because every discarded shot hurts more. ${d.valid_placements} valid placements exist on this level; T walls shrink that number from level to level.`;
+  const pv = state.data ? state.data.baseline.provenance : null;
+  document.getElementById("labProv").textContent = pv ? `● Qiskit ${pv.qiskit} · Aer ${pv.qiskit_aer} · ${pv.shots} shots per configuration · seed ${pv.seed} · 2-qubit error ${pv.p2}` : "● All points computed with Qiskit Aer under the same noise model";
+}
+
+function exportCSV(){
+  const level = +document.getElementById("labLevel").value, N = state.labN;
+  const rows = [["level","n_checks","F_postselected","keep_fraction",`error_N${N}`]]
+    .concat(state.info[level].points.map(p => [level, p.n_checks, p.F, p.keep, errAt(p, N)]));
+  const blob = new Blob([rows.map(r => r.join(",")).join("\n")], {type:"text/csv"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `checkpoint_level${level}_N${N}.csv`; a.click();
+}
+
+// start-up
+ensureLevels().then(() => { document.getElementById("navScore").textContent = totalScore().toLocaleString(); }).catch(() => {});
+</script>
+</body>
+</html>
