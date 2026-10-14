@@ -236,7 +236,7 @@ Dhurander
 
 | Name | Role |
 |---|---|
-| _Your name_ | _e.g. physics and analysis_ |
+| Amberneal Singh | _e.g. physics and analysis_ |
 | _Teammate_ | _e.g. game and UI_ |
 
 ## 🙏 Acknowledgements
