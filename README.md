@@ -94,7 +94,7 @@ The best configuration overall is qiskit-paulice with four checks on the Cliffor
 **Requirements:** Python 3.11+ and Git. No IBM Quantum account is needed; everything runs locally.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/checkpoint.git
+git clone https://github.com/Am-berneal/checkpoint.git
 cd checkpoint
 python -m venv .venv
 ```
