@@ -1,4 +1,6 @@
-<h1 align="center">Checkpoint</h1>
+<p align="center">
+  <img src="assets/logo.png" alt="Checkpoint" width="560">
+</p>
 
 <p align="center">
   <b>A puzzle game about where to place quantum error-detection checks.</b><br>
@@ -36,6 +38,7 @@ Error detection protects a quantum computation by adding ancilla qubits that **c
 **Checkpoint** turns that question into a game. The circuit is drawn as a spacetime grid, with qubits as rows and gate layers as columns. The player has a budget of ancillas and places **coherent Pauli checks** (low-overhead spacetime-code checks, as implemented by [qiskit-paulice](https://pypi.org/project/qiskit-paulice/)). Pressing **Run on Qiskit** simulates the checked circuit under noise, post-selects the shots, and scores the result.
 
 - **T gates are walls.** T is diagonal, so it commutes with Z but not with X or Y. A check may cross a T gate only if it acts as I or Z on that qubit, and the game enforces this live.
+- **You can watch the physics happen.** A propagation inspector shows how each check's Pauli changes gate by gate, and the error replay shows exactly which errors your checks catch and which slip through.
 - **The score is a real trade-off.** It charges for both the errors the checks missed *and* the shots they discarded, so more checks are not always better.
 - **Nothing is hand-set.** Every number on screen comes from a Qiskit Aer run, and the results screen shows the Qiskit version, noise level, shot count and seed that produced it.
 
@@ -75,21 +78,24 @@ The best configuration overall is qiskit-paulice with four checks on the Cliffor
 
 | Screen | What you do |
 |---|---|
-| **Missions** | Four levels with 0, 2, 4 and 8 T gates, each with a 3-ancilla budget |
-| **Workbench** | Pick an X, Y or Z check, click a start cell and an end cell on a qubit, and see it validated live against the T walls |
-| **Run results** | Fidelity with and without checks, shots kept, overhead, and the score split into bias and statistical error |
-| **Results Lab** | Your run against every computed configuration, the Pareto frontier and the error-vs-checks curve; change the shot budget to move the sweet spot |
-| **How it Works** | The rulebook: each game rule and the physics behind it, plus limitations |
+| **Missions** | Four levels with 0, 2, 4 and 8 T gates, each with a 3-ancilla budget and a preview of its T walls |
+| **Workbench** | Pick an X, Y or Z check, click a start cell and an end cell on a qubit, see it validated live against the T walls, and follow it in the **propagation inspector**. A 4-step tutorial explains the rules on first visit |
+| **Run results** | Fidelity with and without checks, shots kept, overhead, the **output distribution before and after post-selection**, the syndrome counts, and the score split into bias and statistical error |
+| **Results Lab** | Your run against every computed configuration, the Pareto frontier, the error-vs-checks curve and a cross-level benchmark; change the shot budget to move the sweet spot |
+| **Replay** | *What slipped through?* Every single-qubit X, Y and Z error after every gate is tested against your checks: caught (anti-commutes) or slipped through |
+| **Rulebook** | The anatomy of a check, each game rule and the physics behind it, and the limitations |
 
 <p align="center">
   <img src="assets/screenshots/results.png" alt="Run results screen" width="440">
   &nbsp;
-  <img src="assets/screenshots/results_lab.png" alt="Results Lab screen" width="440">
+  <img src="assets/screenshots/replay.png" alt="Error replay screen" width="440">
 </p>
 
-**Try this first:** open Level 3. Place an **X** check on q0 from step 0 to step 13: it is rejected at the T wall. Switch to **Z** on the same span: it is accepted, and the game shows it turns into −Y by the end. Run it. Then add a second check and run again: fidelity barely moves, fewer shots survive, and the score gets worse. **Placement beats quantity.**
+**Try this first:** open Level 3. Place an **X** check on q0 from step 0 to step 13: it is rejected at the T wall. Switch to **Z** on the same span: it is accepted, and the inspector shows it turning into −Y by the end. Run it. Then add a second check and run again: fidelity barely moves, fewer shots survive, and the score gets worse. **Placement beats quantity.** Finally, open **Replay** to see which errors your check could never have seen.
 
-**Keyboard shortcuts** on the workbench: <kbd>X</kbd> <kbd>Y</kbd> <kbd>Z</kbd> pick an operator · <kbd>Esc</kbd> cancel a placement · <kbd>Backspace</kbd> remove the last check · <kbd>Enter</kbd> run.
+**Motion with a purpose.** The circuit builds itself gate by gate when a level opens, rejected checks shake at the wall they hit, the propagation inspector reveals a check's Pauli step by step, the output distributions grow before and after post-selection, and the Pareto frontier draws itself in the Results Lab. All animation switches off automatically when the system's *reduce motion* setting is on.
+
+**Keyboard shortcuts** on the workbench: <kbd>X</kbd> <kbd>Y</kbd> <kbd>Z</kbd> pick an operator · <kbd>Esc</kbd> cancel a placement · <kbd>Backspace</kbd> remove the last check · <kbd>Enter</kbd> run. In the replay, <kbd>←</kbd> <kbd>→</kbd> step through errors.
 
 ---
 
@@ -130,10 +136,10 @@ uvicorn api:app --reload
 ```bash
 # Terminal 2: the game UI
 cd frontend
-python -m http.server 5500
+python -m http.server 8080
 ```
 
-Open **http://127.0.0.1:5500** in your browser. The API's interactive docs are at http://127.0.0.1:8000/docs.
+Open **http://127.0.0.1:8080** in your browser (any free port works). The API's interactive docs are at http://127.0.0.1:8000/docs.
 
 ### Reproduce every result
 
@@ -171,6 +177,7 @@ flowchart LR
    **ε = (1 − F<sub>post-selected</sub>) + 1 / √(N · kept fraction)**
 
    The first term is the bias from errors the checks missed; the second is the statistical error of the shots that survive. More checks lower the first and raise the second, so ε has a minimum: the sweet spot.
+6. **Error replay.** For every gate and every qubit it touches, the replay inserts a single X, Y or Z error and checks whether it lies inside a check's span and anti-commutes with that check's propagated Pauli at that point.
 
 ### 🔬 How the game maps to the physics
 
@@ -182,6 +189,7 @@ flowchart LR
 | Discarded shots | Post-selection on a non-trivial syndrome |
 | T wall | T is diagonal, so only I or Z commute through it |
 | Overlapping checks must commute | Anti-commuting checks disturb each other's syndrome |
+| Caught vs slipped (Replay) | An error is detected only if it anti-commutes with a check inside its span |
 | Score | Bias plus statistical error at a fixed shot budget |
 
 ---
@@ -198,7 +206,7 @@ checkpoint/
 │   ├── checks.py        # qiskit-paulice wrapper and overhead metrics
 │   ├── handchecks.py    # hand-made checks: propagation, T walls, commutation
 │   ├── score.py         # estimation error ε
-│   └── game.py          # levels, grid, validation, scoring, cache
+│   └── game.py          # levels, validation, traces, scoring, error replay, cache
 ├── frontend/
 │   └── index.html       # the game UI (single file)
 ├── api.py               # FastAPI backend
@@ -209,7 +217,7 @@ checkpoint/
 ├── precompute.py        # game data
 ├── make_figures.py      # report figures
 ├── results/             # CSV files and figures
-├── assets/              # screenshots used in the README and report
+├── assets/              # logo and screenshots
 ├── REPORT.md            # written report
 ├── REPORT.pdf           # written report (PDF)
 ├── video.md             # video link
@@ -224,7 +232,8 @@ checkpoint/
 | Red "Backend not reachable" bar in the game | Start the backend in terminal 1: `uvicorn api:app --reload` |
 | `MissingOptionalLibraryError: pylatexenc` | `pip install pylatexenc` (needed for circuit drawings) |
 | The Results Lab is empty | Run `python precompute.py`, then restart the backend |
-| Buttons or icons look unstyled | The UI loads Bootstrap from a CDN, so the browser needs an internet connection |
+| Icons are missing | The UI loads Bootstrap Icons from a CDN, so the browser needs an internet connection |
+| An old version of the page appears | Another server (for example VS Code Live Server) is using the port. Serve on a different port, e.g. `python -m http.server 8090`, and press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> |
 
 ## ⚠️ Limitations
 
